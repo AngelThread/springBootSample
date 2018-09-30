@@ -19,10 +19,9 @@ public class MainController {
     private HourStatService hourStatService;
 
     //TODO add client id to READ.me
-    @PostMapping("/client/{clientId}/request")
+    @PostMapping("/clients/{clientId}/request")
     @ResponseBody
     public ResponseEntity<Object> clientRequest(@Valid @RequestBody ClientRequestDto object, @PathVariable long clientId, BindingResult bindingResult) {
-
         if (bindingResult.hasErrors()) {
             log.debug("BindingResult belongs to client:" + clientId);
             throw new InvalidRequestException("Client:" + clientId + " send invalid request");

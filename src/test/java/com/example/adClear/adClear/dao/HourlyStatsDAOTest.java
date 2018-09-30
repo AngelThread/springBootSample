@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 @DataJpaTest
 public class HourlyStatsDAOTest {
     public static final Timestamp TIMESTAMP = new Timestamp(1500000000);
+    public static final long INVALID_COUNT = 3l;
     @Autowired
     private HourlyStatsDAO hourlyStatsDAO;
     @Autowired
@@ -44,20 +45,17 @@ public class HourlyStatsDAOTest {
 
     @Test
     public void testFindByHour() {
-
-        int id = 102;
-        HourlyStat sample = createSampleHourlyStat(id);
+        HourlyStat sample = createSampleHourlyStat();
         hourlyStatsDAO.save(sample);
         Optional<HourlyStat> byStatsOfTheHour = hourlyStatsDAO.findByStatsOfTheHour(customerId,TIMESTAMP);
         assertTrue(byStatsOfTheHour.isPresent());
-        assertTrue(byStatsOfTheHour.get().getId() == id);
+        assertTrue(byStatsOfTheHour.get().getInvalidCount() == INVALID_COUNT);
     }
 
-    private HourlyStat createSampleHourlyStat(int id) {
+    private HourlyStat createSampleHourlyStat() {
         HourlyStat sample = new HourlyStat();
         sample.setCustomerId(customerId);
-        sample.setId(id);
-        sample.setInvalidCount(3l);
+        sample.setInvalidCount(INVALID_COUNT);
         sample.setRequestCount(103l);
         sample.setTime(TIMESTAMP);
         return sample;
