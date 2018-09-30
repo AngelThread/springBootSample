@@ -1,4 +1,4 @@
-package com.example.adClear.adClear.controller;
+package com.example.adClear.adClear.exception;
 
 
 import com.example.adClear.adClear.exception.InvalidRequestException;

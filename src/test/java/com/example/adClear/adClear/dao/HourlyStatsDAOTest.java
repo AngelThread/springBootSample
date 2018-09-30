@@ -48,7 +48,7 @@ public class HourlyStatsDAOTest {
         int id = 102;
         HourlyStat sample = createSampleHourlyStat(id);
         hourlyStatsDAO.save(sample);
-        Optional<HourlyStat> byStatsOfTheHour = hourlyStatsDAO.findByStatsOfTheHour((TIMESTAMP.toLocalDateTime().getHour()));
+        Optional<HourlyStat> byStatsOfTheHour = hourlyStatsDAO.findByStatsOfTheHour(customerId,TIMESTAMP);
         assertTrue(byStatsOfTheHour.isPresent());
         assertTrue(byStatsOfTheHour.get().getId() == id);
     }

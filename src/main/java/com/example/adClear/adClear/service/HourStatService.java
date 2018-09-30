@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 public interface HourStatService {
 
-    public HourlyStat handleClientRequest(ClientRequestDto sentObject);
+    HourlyStat handleClientRequest(ClientRequestDto sentObject);
 
     void addInvalidRequestToStats(long aLong, Timestamp timestamp);
 

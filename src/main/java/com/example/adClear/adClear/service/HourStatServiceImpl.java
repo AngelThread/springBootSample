@@ -20,8 +20,8 @@ public class HourStatServiceImpl implements HourStatService {
     }
 
     @Override
-    public void addInvalidRequestToStats(long aLong, Timestamp timestamp) {
-
+    public void addInvalidRequestToStats(long clientId, Timestamp timestamp) {
+        hourlyStatsDAO.findByStatsOfTheHour(clientId,timestamp);
     }
 
 }
