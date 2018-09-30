@@ -5,9 +5,13 @@ import com.example.adClear.adClear.service.data.ClientRequestData;
 public class ClientRequestDtoUtil {
 
     public static ClientRequestDto toClientRequestDto(ClientRequestData data) {
-
-        return ClientRequestDto.builder().customerID(data.getCustomerID()).remoteIP(data.getRemoteIP()).tagID(data.getTagID())
-                .timestamp(data.getTimestamp()).customerID(data.getCustomerID()).build();
+        ClientRequestDto clientRequestDto = new ClientRequestDto();
+        clientRequestDto.setCustomerID(data.getCustomerID());
+        clientRequestDto.setRemoteIP(data.getRemoteIP());
+        clientRequestDto.setTagID(data.getTagID());
+        clientRequestDto.setUserID(data.getUserID());
+        clientRequestDto.setTimestamp(data.getTimestamp());
+        return clientRequestDto;
 
     }
 

@@ -1,7 +1,7 @@
 package com.example.adClear.adClear.dao;
 
 import com.example.adClear.adClear.entity.Customer;
-import com.example.adClear.adClear.entity.HourlyStats;
+import com.example.adClear.adClear.entity.HourlyStat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class HourlyStatsDAOTest {
+    public static final Timestamp TIMESTAMP = new Timestamp(1500000000);
     @Autowired
     private HourlyStatsDAO hourlyStatsDAO;
     @Autowired
@@ -40,22 +41,25 @@ public class HourlyStatsDAOTest {
         customerDAO.deleteAll();
     }
 
-    @Test
-    public void testInsertFunctionality() {
 
-        int id = 101;
-        HourlyStats sample = new HourlyStats();
+    @Test
+    public void testFindByHour() {
+
+        int id = 102;
+        HourlyStat sample = createSampleHourlyStat(id);
+        hourlyStatsDAO.save(sample);
+        Optional<HourlyStat> byStatsOfTheHour = hourlyStatsDAO.findByStatsOfTheHour((TIMESTAMP.toLocalDateTime().getHour()));
+        assertTrue(byStatsOfTheHour.isPresent());
+        assertTrue(byStatsOfTheHour.get().getId() == id);
+    }
+
+    private HourlyStat createSampleHourlyStat(int id) {
+        HourlyStat sample = new HourlyStat();
         sample.setCustomerId(customerId);
         sample.setId(id);
         sample.setInvalidCount(3l);
         sample.setRequestCount(103l);
-        sample.setTime(new Timestamp(1500000000));
-
-        hourlyStatsDAO.save(sample);
-        Optional<HourlyStats> hourlyStatsById = hourlyStatsDAO.findById(id);
-        assertTrue(hourlyStatsById.isPresent());
-        assertTrue(hourlyStatsById.get().getId() == id);
-    //    assertTrue(hourlyStatsById.get().getId() == 253253);
-
+        sample.setTime(TIMESTAMP);
+        return sample;
     }
 }

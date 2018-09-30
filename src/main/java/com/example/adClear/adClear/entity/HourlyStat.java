@@ -12,11 +12,11 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @Table(name = "hourly_stats")
-public class HourlyStats {
+public class HourlyStat {
     @Id
-    private Integer id;
-    private Long customerId;
+    private int id;
+    private long customerId;
     private Timestamp time;
-    private Long invalidCount;
-    private Long requestCount;
+    private long invalidCount;
+    private long requestCount;
 }

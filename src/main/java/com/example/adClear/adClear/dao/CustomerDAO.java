@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface CustomerDAO extends CrudRepository<Customer, Long> {
 
-     Optional<Customer> findById(Long id);
+     Optional<Customer> findById(long id);
 
 
 }

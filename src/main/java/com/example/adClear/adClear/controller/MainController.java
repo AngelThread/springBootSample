@@ -1,58 +1,33 @@
 package com.example.adClear.adClear.controller;
 
 import com.example.adClear.adClear.controller.dto.ClientRequestDto;
-import com.example.adClear.adClear.dao.CustomerDAO;
-import com.example.adClear.adClear.dao.HourlyStatsDAO;
-import com.example.adClear.adClear.entity.HourlyStats;
+import com.example.adClear.adClear.exception.InvalidRequestException;
+import com.example.adClear.adClear.service.HourStatService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
 public class MainController {
     @Autowired
-    private CustomerDAO customerDAO;
+    private HourStatService hourStatService;
 
-    @Autowired
-    private HourlyStatsDAO hourlyStatsDAO;
+    @PostMapping("/client/{clientId}/request")
+    @ResponseBody
+    public ResponseEntity<Object> clientRequest(@Valid @RequestBody ClientRequestDto object, @PathVariable long clientId, BindingResult bindingResult) {
 
-    @RequestMapping("/clients")
-    public String clients(@RequestParam(value = "id", defaultValue = "1") String id) {
-//
-//        System.out.println("Called!");
-//
-//        Optional<Customer> customer = customerDAO.findById(Long.valueOf(id));
-//        System.out.println("Called!");
-//        String returnEd = customer.isPresent() ? customer.get().getName() : "Id:" + id;
-        return "Hello World";
-    }
+        if (bindingResult.hasErrors()) {
+            log.debug("BindingResult belongs to client:" + clientId);
+            throw new InvalidRequestException("Client:" + clientId + " send invalid request");
+        }
+        hourStatService.handleClientRequest(object);
 
-    @PostMapping("/client/request")
-    public String clientRequest(Object object) {
-
-        log.info("Request sent!");
-
-        System.out.println(object);
-
-        Timestamp timeBefore = Timestamp.valueOf(LocalDateTime.now().minusHours(2));
-        Timestamp timeAfter = Timestamp.valueOf(LocalDateTime.now());
-        log.info("timeBefore:" + timeBefore);
-        log.info("timeAfter:" + timeAfter);
-
-        Iterable<HourlyStats> byCategory = hourlyStatsDAO.findByCategory(timeBefore,
-                timeAfter);
-        log.info("byCategory.toString()" + byCategory.toString());
-//
-//        Optional<Customer> customer = customerDAO.findById(Long.valueOf(id));
-//        System.out.println("Called!");
-//        String returnEd = customer.isPresent() ? customer.get().getName() : "Id:" + id;
-        return "Hello World";
+        return new ResponseEntity<>(object, HttpStatus.OK);
     }
 }
