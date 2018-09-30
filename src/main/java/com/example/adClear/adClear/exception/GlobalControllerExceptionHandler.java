@@ -1,7 +1,6 @@
 package com.example.adClear.adClear.exception;
 
 
-import com.example.adClear.adClear.exception.InvalidRequestException;
 import com.example.adClear.adClear.service.HourStatService;
 import com.fasterxml.jackson.core.JsonParseException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +25,15 @@ public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler({JsonParseException.class, InvalidRequestException.class})
-    public void handleConflict(HttpServletRequest req, Exception ex) {
+    public void handleRequestsWithError(HttpServletRequest req, Exception ex) {
 
-        final Map<String, String> pathVariables = (Map<String, String>) req.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String clientId = pathVariables.get("clientId");
+        String clientId = findClientIdFromRequest(req);
 
         hourStatService.addInvalidRequestToStats(Long.parseLong(clientId), Timestamp.valueOf(LocalDateTime.now()));
+    }
+
+    private String findClientIdFromRequest(HttpServletRequest req) {
+        final Map<String, String> pathVariables = (Map<String, String>) req.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        return pathVariables.get("clientId");
     }
 }

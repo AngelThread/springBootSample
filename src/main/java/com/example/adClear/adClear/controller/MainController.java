@@ -18,6 +18,7 @@ public class MainController {
     @Autowired
     private HourStatService hourStatService;
 
+    //TODO add client id to READ.me
     @PostMapping("/client/{clientId}/request")
     @ResponseBody
     public ResponseEntity<Object> clientRequest(@Valid @RequestBody ClientRequestDto object, @PathVariable long clientId, BindingResult bindingResult) {
