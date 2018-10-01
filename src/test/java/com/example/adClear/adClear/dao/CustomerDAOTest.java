@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class CustomerDAOTest {
-    private Long customerId = 3l;
+    private long customerId = 3l;
     @Autowired
     private CustomerDAO customerDAO;
 

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.ValidationException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class GlobalControllerExceptionHandler {
 
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
-    @ExceptionHandler({JsonParseException.class, InvalidRequestException.class,MethodArgumentNotValidException.class,HttpMessageNotReadableException.class})
+    @ExceptionHandler({JsonParseException.class, InvalidRequestException.class, MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
     public ResponseEntity<Object> handleRequestsWithError(HttpServletRequest req, Exception ex) {
 
         String clientId = findClientIdFromRequest(req);

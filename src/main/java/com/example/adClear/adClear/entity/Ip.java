@@ -9,9 +9,7 @@ import javax.persistence.Id;
 @Entity
 @Data
 @NoArgsConstructor
-public class Customer {
+public class Ip {
     @Id
-    private long id;
-    private String name;
-    private int active;
+    private long ip;
 }

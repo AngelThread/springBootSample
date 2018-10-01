@@ -3,6 +3,8 @@ package com.example.adClear.adClear.service.data;
 import lombok.Builder;
 import lombok.Value;
 
+import java.sql.Timestamp;
+
 @Value
 @Builder
 public class ClientRequestData {
@@ -10,6 +12,6 @@ public class ClientRequestData {
     private int tagID;
     private String userID;
     private String remoteIP;
-    private String timestamp;
+    private Timestamp timestamp;
 
 }

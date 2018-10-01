@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(MainController.class)
-public class CreateClientIntegrationTest {
+public class ClientControllerTest {
     @Autowired
     MockMvc mockMvc;
     @MockBean
@@ -34,7 +33,7 @@ public class CreateClientIntegrationTest {
 
     @Test
     public void clientRequestWithNullFields() throws Exception {
-        given(hourStatService.handleClientRequest(any())).willReturn(new HourlyStat());
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
 
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,7 +47,7 @@ public class CreateClientIntegrationTest {
 
     @Test
     public void clientRequestWithNullBody() throws Exception {
-        given(hourStatService.handleClientRequest(any())).willReturn(new HourlyStat());
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
 
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,10 +61,10 @@ public class CreateClientIntegrationTest {
 
     @Test
     public void requestWithSuccessReturnCode() throws Exception {
-        given(hourStatService.handleClientRequest(any())).willReturn(new HourlyStat());
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
         final ObjectMapper objectMapper = new ObjectMapper();
         ClientRequestDto clientRequestDto = new ClientRequestDto();
-        clientRequestDto.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+        clientRequestDto.setTimestamp("1500000000");
         clientRequestDto.setCustomerID(2);
         clientRequestDto.setUserID("2");
         clientRequestDto.setTagID(2);
@@ -80,7 +79,7 @@ public class CreateClientIntegrationTest {
 
     @Test
     public void malformedJson() throws Exception {
-        given(hourStatService.handleClientRequest(any())).willReturn(new HourlyStat());
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
 
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -91,6 +90,25 @@ public class CreateClientIntegrationTest {
                 .andExpect(status().is(400));
 
         verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
+    }
+    @Test
+    public void wrongTimeStampValue() throws Exception {
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
+        final ObjectMapper objectMapper = new ObjectMapper();
+        ClientRequestDto clientRequestDto = new ClientRequestDto();
+        clientRequestDto.setTimestamp("xxxxx");
+        clientRequestDto.setCustomerID(2);
+        clientRequestDto.setUserID("2");
+        clientRequestDto.setTagID(2);
+        clientRequestDto.setRemoteIP("RemoteIp");
+
+
+        mockMvc.perform(post("/clients/2/request")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(clientRequestDto)))
+                .andExpect(status().is(400));
+        verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
+
     }
 
 

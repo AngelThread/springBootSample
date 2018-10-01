@@ -1,12 +1,10 @@
 package com.example.adClear.adClear.dao;
 
-import com.example.adClear.adClear.entity.Customer;
+import com.example.adClear.adClear.entity.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface CustomerDAO extends CrudRepository<Customer, Long> {
+public interface UserDAO extends CrudRepository<User, String> {
 
 }
