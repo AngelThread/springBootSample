@@ -58,21 +58,21 @@ public class HourStatServiceImpl implements HourStatService {
     private void checkBusinessLogicValid(long clientId, ClientRequestData sentObject) {
         List<String> errors = new ArrayList<>();
         if (!checkIfCustomerIdAndClientIdSame(clientId, sentObject)) {
-            log.info("Customer Id:{} in the request and client id:{} in the path are different!", sentObject.getCustomerID(), clientId);
+            log.debug("Customer Id:{} in the request and client id:{} in the path are different!", sentObject.getCustomerID(), clientId);
             errors.add("Customer Id:" + clientId + " in the request and client id:" + clientId + " in the path are different!");
         }
         if (!commonValidator.checkCustomerStatusAndExistenceValid(clientId)) {
-            log.info("Customer Id:{} does not exist or not active", clientId);
+            log.debug("Customer Id:{} does not exist or not active", clientId);
             errors.add("Customer Id:" + clientId + " idoes not exist or not active!");
         }
 
         if (!checkIpAddressIsValid(sentObject.getRemoteIP())) {
-            log.info("Customer Id:{} sent request with ip address with in the blacklist!", clientId);
+            log.debug("Customer Id:{} sent request with ip address with in the blacklist!", clientId);
             errors.add("Customer Id:" + clientId + " sent request with ip address with in the blacklist!");
         }
 
         if (!checkIfUserAgentValid(sentObject.getUserID())) {
-            log.info("Customer Id:{} sent request with user id with in the blacklist!", clientId);
+            log.debug("Customer Id:{} sent request with user id with in the blacklist!", clientId);
             errors.add("Customer Id:" + clientId + " sent request with user id with in the blacklist!");
         }
         if (!CollectionUtils.isEmpty(errors)) {

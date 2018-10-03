@@ -28,7 +28,7 @@ public class ClientRequestController {
     public ResponseEntity<Object> clientRequest(@Valid @RequestBody ClientRequestDto request, @PathVariable @Valid long clientId, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.debug("BindingResult belongs to client:" + clientId);
-            throw new InvalidRequestException("Client:" + clientId + " send invalid request");
+            throw new InvalidRequestException("Client:" + clientId + " sent invalid request");
         }
         hourStatService.handleClientRequest(clientId, ClientRequestDtoUtil.toClientRequestData(request));
 

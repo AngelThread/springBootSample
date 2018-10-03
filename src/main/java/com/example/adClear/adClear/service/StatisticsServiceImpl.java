@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.Valid;
 import java.util.Iterator;
 import java.util.Optional;
+
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
@@ -23,6 +24,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public Optional<HourlyStatisticsResponseDto> fetchHourlyStatistics(@Valid long clientId, @Valid HourlyStatisticsRequestDto request) {
         if (!commonValidator.checkCustomerStatusAndExistenceValid(clientId)) {
+            //TODO convert this exception to valid message in response
             throw new InvalidStatisticRequest("There is not active client defined with clientId:" + clientId);
         }
         Iterable<HourlyStat> dailyRequests = hourlyStatsDAO.findDailyRequests(clientId, request.getDate());
@@ -36,6 +38,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private HourlyStatisticsResponseDto buildResponse(@Valid long clientId, @Valid HourlyStatisticsRequestDto request, Iterable<HourlyStat> dailyRequests) {
         Iterator<HourlyStat> iterator = dailyRequests.iterator();
         HourlyStatisticsResponseDto responseDto = new HourlyStatisticsResponseDto();
+        //TODO following logic could be designed better
         long totalRequestCount = 0l;
 
         while (iterator.hasNext()) {
