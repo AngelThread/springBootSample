@@ -8,18 +8,25 @@ INSERT INTO `customer` VALUES (1,'Big News Media Corp',1),(2,'Online Mega Store'
 
 
 CREATE TABLE `ua_blacklist` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ua` varchar(255) NOT NULL,
   PRIMARY KEY (`ua`)
 );
-INSERT INTO `ua_blacklist` VALUES ('A6-Indexer'),('Googlebot-News'),('Googlebot');
+ CREATE INDEX ua_idx ON ua_blacklist(ua);
+
+
+INSERT INTO `ua_blacklist` VALUES (1,'A6-Indexer'),(2,'Googlebot-News'),(3,'Googlebot');
 
 
 CREATE TABLE `ip_blacklist` (
-  `ip` BigInt(11) unsigned NOT NULL,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(11) unsigned NOT NULL,
   PRIMARY KEY (`ip`)
 );
+ CREATE INDEX ip_idx ON ip_blacklist(ip);
 
-INSERT INTO `ip_blacklist` VALUES (0),(2130706433),(4294967295);
+
+INSERT INTO `ip_blacklist` VALUES (1,'0'),(2,'2130706433'),(3,'4294967295');
 
 
 CREATE TABLE `hourly_stats` (
@@ -34,3 +41,4 @@ CREATE TABLE `hourly_stats` (
 );
 
     CREATE INDEX customer_idx ON hourly_stats(customer_id);
+    CREATE INDEX customer_timex ON hourly_stats(`time`);

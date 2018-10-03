@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface HourStatService {
 
-    Optional<Object> handleClientRequest(long clientId, ClientRequestData sentObject);
+    Optional<ClientRequestData> handleClientRequest(long clientId, ClientRequestData sentObject);
 
     void addInvalidRequestToStats(long aLong, Timestamp timestamp);
 

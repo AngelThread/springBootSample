@@ -1,21 +1,23 @@
 package com.example.adClear.adClear.service;
 
 import com.example.adClear.adClear.dao.IpDAO;
-import com.example.adClear.adClear.dao.CustomerDAO;
 import com.example.adClear.adClear.dao.UserDAO;
 
 import com.example.adClear.adClear.dao.HourlyStatsDAO;
-import com.example.adClear.adClear.entity.Customer;
 import com.example.adClear.adClear.entity.HourlyStat;
 import com.example.adClear.adClear.entity.Ip;
 import com.example.adClear.adClear.entity.User;
+import com.example.adClear.adClear.exception.InvalidBusinessLogicException;
 import com.example.adClear.adClear.service.data.ClientRequestData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,13 +32,10 @@ public class HourStatServiceImpl implements HourStatService {
     @Autowired
     private CommonValidator commonValidator;
 
-    public Optional<Object> handleClientRequest(long clientId, ClientRequestData requestData) {
-        if (!checkBusinessLogicValid(clientId, requestData)) {
-            return Optional.empty();
-        }
+    public Optional<ClientRequestData> handleClientRequest(long clientId, ClientRequestData requestData) {
+        checkBusinessLogicValid(clientId, requestData);
         addValidRequestToStats(requestData);
-
-        return Optional.empty();
+        return Optional.of(requestData);
     }
 
     private void addValidRequestToStats(ClientRequestData requestData) {
@@ -50,45 +49,44 @@ public class HourStatServiceImpl implements HourStatService {
             hourlyStatsDAO.save(hourlyStat);
             log.debug("Client " + requestData.getCustomerID() + " valid request count increased");
         } else {
-            HourlyStat hourlyStat = buildHourlyStatAsFirstRecordOfHour(requestData.getCustomerID(), requestData.getTimestamp());
+            HourlyStat hourlyStat = buildHourlyStatAsFirstRecordOfHour(requestData.getCustomerID(), requestData.getTimestamp(), 1, 0);
             hourlyStatsDAO.save(hourlyStat);
             log.debug("Client " + requestData.getCustomerID() + " new data created for the hour");
         }
     }
 
-    private boolean checkBusinessLogicValid(long clientId, ClientRequestData sentObject) {
+    private void checkBusinessLogicValid(long clientId, ClientRequestData sentObject) {
+        List<String> errors = new ArrayList<>();
         if (!checkIfCustomerIdAndClientIdSame(clientId, sentObject)) {
             log.info("Customer Id:{} in the request and client id:{} in the path are different!", sentObject.getCustomerID(), clientId);
-            this.addInvalidRequestToStats(clientId, sentObject.getTimestamp());
-            return Boolean.FALSE;
+            errors.add("Customer Id:" + clientId + " in the request and client id:" + clientId + " in the path are different!");
         }
         if (!commonValidator.checkCustomerStatusAndExistenceValid(clientId)) {
-            this.addInvalidRequestToStats(clientId, sentObject.getTimestamp());
             log.info("Customer Id:{} does not exist or not active", clientId);
-            return Boolean.FALSE;
+            errors.add("Customer Id:" + clientId + " idoes not exist or not active!");
         }
 
         if (!checkIpAddressIsValid(sentObject.getRemoteIP())) {
-            this.addInvalidRequestToStats(clientId, sentObject.getTimestamp());
             log.info("Customer Id:{} sent request with ip address with in the blacklist!", clientId);
-            return Boolean.FALSE;
+            errors.add("Customer Id:" + clientId + " sent request with ip address with in the blacklist!");
         }
 
         if (!checkIfUserAgentValid(sentObject.getUserID())) {
-            this.addInvalidRequestToStats(clientId, sentObject.getTimestamp());
             log.info("Customer Id:{} sent request with user id with in the blacklist!", clientId);
-            return Boolean.FALSE;
+            errors.add("Customer Id:" + clientId + " sent request with user id with in the blacklist!");
         }
-        return Boolean.TRUE;
+        if (!CollectionUtils.isEmpty(errors)) {
+            throw new InvalidBusinessLogicException(errors);
+        }
     }
 
     private boolean checkIfUserAgentValid(@NotNull String userID) {
-        Optional<User> possibleUser = userDAO.findById(userID);
+        Optional<User> possibleUser = userDAO.findUserAgent(userID);
         return !possibleUser.isPresent();
     }
 
     private boolean checkIpAddressIsValid(@NotNull String remoteIP) {
-        Optional<Ip> ipInBlackList = ipDAO.findById(remoteIP);
+        Optional<Ip> ipInBlackList = ipDAO.findByIp(remoteIP);
 
         return !ipInBlackList.isPresent();
     }
@@ -110,16 +108,16 @@ public class HourStatServiceImpl implements HourStatService {
             hourlyStatsDAO.save(hourlyStat);
             log.debug("Client " + clientId + " invalid request count increased");
         } else {
-            HourlyStat hourlyStat = buildHourlyStatAsFirstRecordOfHour(clientId, timestamp);
+            HourlyStat hourlyStat = buildHourlyStatAsFirstRecordOfHour(clientId, timestamp, 1, 1);
             hourlyStatsDAO.save(hourlyStat);
             log.debug("Client " + clientId + " new data created for the hour");
         }
     }
 
-    private HourlyStat buildHourlyStatAsFirstRecordOfHour(long clientId, Timestamp timestamp) {
+    private HourlyStat buildHourlyStatAsFirstRecordOfHour(long clientId, Timestamp timestamp, int requestCount, int invalidCount) {
         HourlyStat hourlyStat = new HourlyStat();
-        hourlyStat.setRequestCount(1);
-        hourlyStat.setInvalidCount(1);
+        hourlyStat.setRequestCount(requestCount);
+        hourlyStat.setInvalidCount(invalidCount);
         hourlyStat.setCustomerId(clientId);
         hourlyStat.setTime(timestamp);
         return hourlyStat;

@@ -9,4 +9,6 @@ import java.time.LocalDate;
 @Builder
 public class StatisticRequestData {
     private LocalDate date;
+    private long customerID;
+
 }

@@ -20,8 +20,13 @@ public class ClientRequestDtoUtil {
 
     public static ClientRequestData toClientRequestData(ClientRequestDto dto) {
 
-        return ClientRequestData.builder().customerID(dto.getCustomerID()).remoteIP(dto.getRemoteIP()).tagID(dto.getTagID())
-                .timestamp(new Timestamp(Long.parseLong(dto.getTimestamp()))).customerID(dto.getCustomerID()).build();
+        return ClientRequestData.builder()
+                .customerID(dto.getCustomerID())
+                .remoteIP(dto.getRemoteIP())
+                .tagID(dto.getTagID())
+                .timestamp(new Timestamp(Long.parseLong(dto.getTimestamp())))
+                .userID(dto.getUserID())
+                .build();
 
     }
 }

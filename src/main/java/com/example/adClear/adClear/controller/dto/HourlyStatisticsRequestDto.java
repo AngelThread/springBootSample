@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public class HourlyStatisticsRequestDto {
 
     private long customerID;
-    private long requestCount;
     private LocalDate date;
 
 }

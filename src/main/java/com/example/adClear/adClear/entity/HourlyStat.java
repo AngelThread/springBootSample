@@ -3,16 +3,16 @@ package com.example.adClear.adClear.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "hourly_stats")
+@Table(name = "hourly_stats",
+        indexes = {
+                @Index(columnList = "customerId,time", name = "customerId_index_to_HourlyStat,time_index_to_HourlyStat")
+        })
 public class HourlyStat {
     @Id
     @GeneratedValue

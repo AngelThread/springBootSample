@@ -4,6 +4,7 @@ import com.example.adClear.adClear.controller.dto.ClientRequestDto;
 import com.example.adClear.adClear.controller.dto.ClientRequestDtoUtil;
 import com.example.adClear.adClear.exception.InvalidRequestException;
 import com.example.adClear.adClear.service.HourStatService;
+import com.example.adClear.adClear.service.data.ClientRequestData;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Slf4j
 @RestController

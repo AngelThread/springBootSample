@@ -3,6 +3,7 @@ package com.example.adClear.adClear.controller;
 import com.example.adClear.adClear.controller.dto.ClientRequestDto;
 import com.example.adClear.adClear.entity.HourlyStat;
 import com.example.adClear.adClear.service.HourStatService;
+import com.example.adClear.adClear.service.data.ClientRequestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +35,7 @@ public class ClientControllerTest {
 
     @Test
     public void clientRequestWithNullFields() throws Exception {
-        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.empty());
 
         final ObjectMapper objectMapper = new ObjectMapper();
         ClientRequestDto clientRequestDto = getClientRequestDtoSample("1500000000", null, 2, "2", 2);
@@ -51,7 +52,7 @@ public class ClientControllerTest {
 
     @Test
     public void clientRequestWithNullBody() throws Exception {
-        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.empty());
 
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -67,7 +68,7 @@ public class ClientControllerTest {
 
     @Test
     public void requestWithSuccessReturnCode() throws Exception {
-        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.empty());
         final ObjectMapper objectMapper = new ObjectMapper();
         ClientRequestDto clientRequestDto = getClientRequestDtoSample("1500000000", "RemoteIp", 2, "2", 2);
 
@@ -90,7 +91,7 @@ public class ClientControllerTest {
 
     @Test
     public void malformedJson() throws Exception {
-        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.empty());
 
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -107,7 +108,7 @@ public class ClientControllerTest {
 
     @Test
     public void wrongTimeStampValue() throws Exception {
-        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
+        given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.empty());
         final ObjectMapper objectMapper = new ObjectMapper();
         ClientRequestDto clientRequestDto = getClientRequestDtoSample("xxxxx", "RemoteIp", 2, "2", 2);
 

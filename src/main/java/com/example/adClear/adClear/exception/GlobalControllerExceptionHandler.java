@@ -34,7 +34,7 @@ public class GlobalControllerExceptionHandler {
 
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
-    @ExceptionHandler({JsonParseException.class, InvalidRequestException.class, MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({JsonParseException.class, InvalidRequestException.class, MethodArgumentNotValidException.class, HttpMessageNotReadableException.class, InvalidBusinessLogicException.class})
     public ResponseEntity<Object> handleRequestsWithError(HttpServletRequest req, Exception ex) {
 
         String clientId = findClientIdFromRequest(req);
@@ -64,7 +64,9 @@ public class GlobalControllerExceptionHandler {
         if (ex instanceof HttpMessageNotReadableException) {
             errors.add("Http Message Not Readable," + "not valid parsable body!");
         }
-
+        if (ex instanceof InvalidBusinessLogicException) {
+            errors.addAll(((InvalidBusinessLogicException) ex).getErrors());
+        }
         errors = convertValidationErrorsToErrorMessage(fieldErrors, globalErrors, errors);
         return new ErrorMessage(errors, HttpStatus.BAD_REQUEST.value());
 
