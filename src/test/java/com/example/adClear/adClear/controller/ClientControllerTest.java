@@ -21,10 +21,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(MainController.class)
+@WebMvcTest(ClientRequestController.class)
 public class ClientControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -36,12 +37,15 @@ public class ClientControllerTest {
         given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
 
         final ObjectMapper objectMapper = new ObjectMapper();
+        ClientRequestDto clientRequestDto = getClientRequestDtoSample("1500000000", null, 2, "2", 2);
 
         mockMvc.perform(post("/clients/2/request")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(new ClientRequestDto())))
-                .andExpect(status().is(400));
-           verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
+                .content(objectMapper.writeValueAsBytes(clientRequestDto)))
+                .andExpect(status().is(400))
+                .andExpect(content().string("{\"errors\":[\"remoteIP, must not be null\"],\"status\":400}"));
+
+        verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
 
     }
 
@@ -54,7 +58,9 @@ public class ClientControllerTest {
         mockMvc.perform(post("/clients/2/request")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(null)))
-                .andExpect(status().is(400));
+                .andExpect(status().is(400))
+                .andExpect(content().string("{\"errors\":[\"Http Message Not Readable,not valid parsable body!\"],\"status\":400}"));
+
         verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
 
     }
@@ -63,18 +69,23 @@ public class ClientControllerTest {
     public void requestWithSuccessReturnCode() throws Exception {
         given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
         final ObjectMapper objectMapper = new ObjectMapper();
-        ClientRequestDto clientRequestDto = new ClientRequestDto();
-        clientRequestDto.setTimestamp("1500000000");
-        clientRequestDto.setCustomerID(2);
-        clientRequestDto.setUserID("2");
-        clientRequestDto.setTagID(2);
-        clientRequestDto.setRemoteIP("RemoteIp");
+        ClientRequestDto clientRequestDto = getClientRequestDtoSample("1500000000", "RemoteIp", 2, "2", 2);
 
 
         mockMvc.perform(post("/clients/2/request")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(clientRequestDto)))
                 .andExpect(status().is(200));
+    }
+
+    private ClientRequestDto getClientRequestDtoSample(String s, String remoteIp, int customerID, String userID, int tagID) {
+        ClientRequestDto clientRequestDto = new ClientRequestDto();
+        clientRequestDto.setTimestamp(s);
+        clientRequestDto.setCustomerID(customerID);
+        clientRequestDto.setUserID(userID);
+        clientRequestDto.setTagID(tagID);
+        clientRequestDto.setRemoteIP(remoteIp);
+        return clientRequestDto;
     }
 
     @Test
@@ -87,26 +98,26 @@ public class ClientControllerTest {
         mockMvc.perform(post("/clients/2/request")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(malformedJson)))
-                .andExpect(status().is(400));
+                .andExpect(status().is(400))
+                .andExpect(content().string("{\"errors\":[\"Http Message Not Readable,not valid parsable body!\"],\"status\":400}"));
+
 
         verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
     }
+
     @Test
     public void wrongTimeStampValue() throws Exception {
         given(hourStatService.handleClientRequest(anyLong(), any())).willReturn(java.util.Optional.of(new HourlyStat()));
         final ObjectMapper objectMapper = new ObjectMapper();
-        ClientRequestDto clientRequestDto = new ClientRequestDto();
-        clientRequestDto.setTimestamp("xxxxx");
-        clientRequestDto.setCustomerID(2);
-        clientRequestDto.setUserID("2");
-        clientRequestDto.setTagID(2);
-        clientRequestDto.setRemoteIP("RemoteIp");
+        ClientRequestDto clientRequestDto = getClientRequestDtoSample("xxxxx", "RemoteIp", 2, "2", 2);
 
 
         mockMvc.perform(post("/clients/2/request")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(clientRequestDto)))
-                .andExpect(status().is(400));
+                .andExpect(status().is(400))
+                .andExpect(content().string("{\"errors\":[\"timestamp, must match \\\"^([1-9][5-9]\\\\d{8}\\\\d*|\\\\d{11,})$\\\"\"],\"status\":400}"));
+
         verify(hourStatService, times(1)).addInvalidRequestToStats(anyLong(), any(Timestamp.class));
 
     }

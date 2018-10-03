@@ -21,15 +21,14 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class HourStatServiceImpl implements HourStatService {
-    public static final int ACTIVE_CUSTOMER = 1;
     @Autowired
     private HourlyStatsDAO hourlyStatsDAO;
-    @Autowired
-    private CustomerDAO customerDAO;
     @Autowired
     private IpDAO ipDAO;
     @Autowired
     private UserDAO userDAO;
+    @Autowired
+    private CommonValidator commonValidator;
 
     public Optional<Object> handleClientRequest(long clientId, ClientRequestData requestData) {
         if (!checkBusinessLogicValid(clientId, requestData)) {
@@ -43,6 +42,7 @@ public class HourStatServiceImpl implements HourStatService {
     private void addValidRequestToStats(ClientRequestData requestData) {
         Optional<HourlyStat> possibleHourlyStat = hourlyStatsDAO.findByStatsOfTheHour(requestData.getCustomerID(),
                 requestData.getTimestamp());
+
         if (possibleHourlyStat.isPresent()) {
             HourlyStat hourlyStat = possibleHourlyStat.get();
             long requestCount = hourlyStat.getRequestCount();
@@ -62,7 +62,7 @@ public class HourStatServiceImpl implements HourStatService {
             this.addInvalidRequestToStats(clientId, sentObject.getTimestamp());
             return Boolean.FALSE;
         }
-        if (!checkCustomerStatusAndExistenceValid(clientId)) {
+        if (!commonValidator.checkCustomerStatusAndExistenceValid(clientId)) {
             this.addInvalidRequestToStats(clientId, sentObject.getTimestamp());
             log.info("Customer Id:{} does not exist or not active", clientId);
             return Boolean.FALSE;
@@ -93,11 +93,6 @@ public class HourStatServiceImpl implements HourStatService {
         return !ipInBlackList.isPresent();
     }
 
-    private boolean checkCustomerStatusAndExistenceValid(long clientId) {
-        Optional<Customer> possibleCustomer = customerDAO.findById(clientId);
-
-        return possibleCustomer.isPresent() && possibleCustomer.get().getActive() == ACTIVE_CUSTOMER;
-    }
 
     private boolean checkIfCustomerIdAndClientIdSame(long clientId, ClientRequestData sentObject) {
         return clientId == sentObject.getCustomerID();

@@ -16,7 +16,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-public class MainController {
+public class ClientRequestController {
     @Autowired
     private HourStatService hourStatService;
 
