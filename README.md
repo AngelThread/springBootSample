@@ -1,5 +1,5 @@
 # springBootSample
-Notes for Implementation of AdClear’s Exercise
+Notes for Implementation Exercise
 
 	⁃	Exercise implemented by Spring Boot and Java 8.
 	⁃	As database Spring Boot’s embedded H2 database is used.
