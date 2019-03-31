@@ -3,6 +3,7 @@ Notes for Implementation Exercise
 
 	⁃	Exercise implemented by Spring Boot and Java 8.
 	⁃	As database Spring Boot’s embedded H2 database is used.
+	⁃	There are two controllers ClientRequest and Statistics controllers which accept requests of clients and  returns statistics of given client by its client id.
 	⁃	H2 engine accepts min and max values 2147483648 to 2147483647 as integers. Because of this reason ip_blacklist table’s type defined as BigINT for ip column.
 	⁃	KEY keyword does not mean anything to H2 database engine, this statement has been changes as follow.   KEY `customer_idx` (`customer_id`) —>   CREATE INDEX customer_idx ON hourly_stats(customer_id);
 	⁃	Id column is added to ip_blacklist and ua_blacklist tables.
